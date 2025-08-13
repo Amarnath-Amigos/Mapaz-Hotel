@@ -171,7 +171,9 @@
                     <div class="rts__contact">
                         <span class="h4 d-block mb-30 text-center">Love to hear from you
                             Get in touch!</span>
-                        <form action="https://html.themewant.com/mapaz/mailer.php" method="post" class="rts__contact__form" id="contact-form">
+                        <form action="https://html.themewant.com/mapaz/mailer.php" method="POST" id="form" class="rts__contact__form" id="contact-form">
+                            <input type="hidden" name="access_key" value="f2a4fc92-42e2-4d66-92f1-acb32e4dba13">
+
                             <div class="form-input">
                                 <label for="name">Your Name</label>
                                 <div class="pr">
@@ -194,6 +196,7 @@
                                 </div>
                             </div>
                             <button type="submit" class="theme-btn btn-style fill w-100"><span>Send Message</span></button>
+                            <div id="result"></div>
                         </form>
                         <div id="form-messages" class="mt-20"></div>
                     </div>
@@ -610,9 +613,51 @@
     <script src="assets/js/gdpr.js"></script>
     <!-- custom js -->
     <script src="assets/js/main.js"></script>
+    <script>
+        const form = document.getElementById('form');
+        const result = document.getElementById('result');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const object = Object.fromEntries(formData);
+            const json = JSON.stringify(object);
+            result.innerHTML = "Please wait..."
+
+            fetch('https://api.web3forms.com/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: json
+                })
+                .then(async(response) => {
+                    let json = await response.json();
+                    if (response.status == 200) {
+                        result.innerHTML = "Form submitted successfully";
+                    } else {
+                        console.log(response);
+                        result.innerHTML = json.message;
+                    }
+                })
+                .catch(error => {
+                    console.log(error);
+                    result.innerHTML = "Something went wrong!";
+                })
+                .then(function() {
+                    form.reset();
+                    setTimeout(() => {
+                        result.style.display = "none";
+                    }, 3000);
+                });
+        });
+    </script>
 </body>
 
 
 <!-- Mirrored from html.themewant.com/mapaz/contact.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 22 Jan 2025 08:07:46 GMT -->
+
+</html>
 
 </html>
